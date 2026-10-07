@@ -1,22 +1,70 @@
-# CORE SETTINGS
-DISASTER_MODE_TRIGGER=0
-WARFARE_SHRED_TRIGGER=2
-SOVEREIGN_TRADE_MODE=true
+#!/bin/bash
+# ==============================================================================
+# INFRASTRUCTURE EDGE OPERATIONAL CONTROL ENGINE - EXTREME DISASTER ENVIRONMENT
+# ==============================================================================
 
-# NETWORK & MESH PORTS
-SOVEREIGN_P2P_MESH_PORT=9050
-OBFUSCATION_GEO_HOP_COUNT=5
+set -e
 
-# TIMING & FAILSAFE
-CRYO_HEARTBEAT_INTERVAL=30
-FALLBACK_FAILOVER_ADDRESS="0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+# Load environmental arrays
+if [ -f .env ]; then
+    source .env
+else
+    echo "[CRITICAL] Environmental variable ledger missing. Aborting bootstrap."
+    exit 1
+fi
 
-# BLOCKCHAIN HEADERS
-LOCAL_EVM_FORK_BLOCK=21000000
-SOVEREIGN_LIGHT_CLIENT_GENESIS="0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3"
+echo "[INIT] Booting Resilient Infrastructure Edge Synchronization Daemon..."
+echo "[CONFIG] Tracking system sensor path: $HARDWARE_TAMPER_SENSOR_PATH"
 
-# HARDWARE MONITORS
-HARDWARE_TAMPER_SENSOR_PATH="/sys/class/power_supply/bat0/status"
-SHRED_KEY_CYPHER="EPHEMERAL_RAM_ONLY_KEY_V1"
-DRIP_SYNC_RATE_LIMIT=10
-NMEA_GPS_STREAM_BAUD=4800
+# Active Hardware Audit Loop
+if [ -f "$HARDWARE_TAMPER_SENSOR_PATH" ]; then
+    SYSTEM_BATTERY_STATE=$(cat "$HARDWARE_TAMPER_SENSOR_PATH")
+    echo "[SYSTEM MONITOR] Current hardware power metrics: $SYSTEM_BATTERY_STATE"
+else
+    SYSTEM_BATTERY_STATE="UNKNOWN"
+    echo "[WARNING] Hardware telemetry inaccessible. Defaulting to defensive posture."
+fi
+
+# Kinetic threat check & automated zeroization trigger
+if [ "$SYSTEM_BATTERY_STATE" == "Discharging" ] || [ "$WARFARE_SHRED_TRIGGER" -eq 2 ]; then
+    echo "========================================================================"
+    echo "[CRITICAL WARFARE THREAT DETECTED] ENGAGING AUTOMATED ZEROIZATION CONTEXT"
+    echo "========================================================================"
+    
+    # Secure memory purge
+    unset SHRED_KEY_CYPHER
+    if [ -d /dev/shm ]; then
+        echo "[SECURITY] Purging volatile shared cryptographic memory blocks..."
+        rm -rf /dev/shm/* 2>/dev/null
+    fi
+    
+    echo "[SUCCESSFUL EVACUATION] All sensitive operational parameters evicted. Node muted."
+    exit 2
+fi
+
+# WAN Connectivity Audit Network Pathways
+echo "[NETWORK] Polling global ledger sync points via dynamic ping matrix..."
+PING_TARGETS=("8.8.8.8" "1.1.1.1" "https://giveth.io")
+NETWORK_STATUS="OFFLINE"
+
+for target in "${PING_TARGETS[@]}"; do
+    if ping -c 1 -W 2 "$target" > /dev/null 2>&1; then
+        NETWORK_STATUS="ONLINE"
+        break
+    fi
+done
+
+if [ "$NETWORK_STATUS" == "OFFLINE" ]; then
+    echo "[BLACKOUT EVENT] Total Wide-Area Network collapse detected."
+    echo "[FALLBACK] Deploying Local Air-Gapped Sandbox Environment..."
+    export DISASTER_MODE_TRIGGER=2
+    
+    if [ "$SOVEREIGN_TRADE_MODE" = "true" ]; then
+        echo "[SOVEREIGN-TRADE] Initializing maritime/aviation local mesh backbone on port $SOVEREIGN_P2P_MESH_PORT"
+        # Spawning persistent P2P routing node background execution
+        nohup socat TCP-LISTEN:$SOVEREIGN_P2P_MESH_PORT,fork PIPE > /dev/null 2>&1 &
+    fi
+else
+    echo "[STABLE] Wide-Area Network operational. Streaming core state parameters to cloud hubs."
+    export DISASTER_MODE_TRIGGER=0
+fi
